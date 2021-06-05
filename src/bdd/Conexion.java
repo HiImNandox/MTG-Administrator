@@ -33,6 +33,7 @@ public class Conexion {
 			System.out.println("No se puede conectar!!!");
 			System.out.println(e);
 		}
+		quitarTimeZone();
 		return con;
 	}
 	
@@ -63,5 +64,17 @@ public class Conexion {
 		}
 	}
 	
-	
+	public static void quitarTimeZone() {
+		String consulta = "SET GLOBAL time_zone = '+3:00';";
+		
+		try {
+			PreparedStatement pst = con.prepareStatement(consulta);
+			ResultSet respuesta = pst.executeQuery();
+			if (!respuesta.next()) {
+				System.out.println("La base de datos esta desconectada");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 }
