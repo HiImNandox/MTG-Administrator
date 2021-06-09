@@ -76,7 +76,7 @@ public class Usuarios {
 			}
 			
 		} catch (Exception e) {
-			System.out.println(e);
+			JOptionPane.showMessageDialog(null,e);
 		}
 		return resultado;
 	}

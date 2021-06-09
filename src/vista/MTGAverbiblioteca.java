@@ -110,7 +110,7 @@ public class MTGAverbiblioteca extends JFrame {
 		panelBuscador.add(comboBox_1_1);
 		
 		JButton btnNewButton = new JButton("A\u00F1adir carta");
-		btnNewButton.setBounds(849, 40, 112, 23);
+		btnNewButton.setBounds(849, 77, 112, 23);
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Eliminar Carta");
@@ -118,7 +118,7 @@ public class MTGAverbiblioteca extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton_1.setBounds(849, 89, 112, 23);
+		btnNewButton_1.setBounds(849, 135, 112, 23);
 		contentPane.add(btnNewButton_1);
 		
 		JScrollPane scrollPane = new JScrollPane();

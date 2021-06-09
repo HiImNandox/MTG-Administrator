@@ -2,7 +2,6 @@ package vista.Paneles;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import java.awt.Font;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
@@ -76,7 +75,7 @@ public class MTGAbiblioteca extends JPanel {
 		panelBuscador.add(comboBox_1);
 		
 		JLabel lblNewLabel_4 = new JLabel("Nombre ");
-		lblNewLabel_4.setBounds(10, 53, 113, 14);
+		lblNewLabel_4.setBounds(10, 44, 113, 14);
 		panelBuscador.add(lblNewLabel_4);
 		
 		textField = new JTextField();

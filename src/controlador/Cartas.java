@@ -1,5 +1,11 @@
 package controlador;
 
+import java.sql.*;
+
+import javax.swing.JOptionPane;
+
+import bdd.Conexion;
+
 public class Cartas {
 
 	private String nombre;
@@ -12,16 +18,156 @@ public class Cartas {
 	private String rareza;
 	private String extension;
 	private String textodelacarta;
-	
-	public void anadirCartas() {
-		
+
+	public Cartas(String nombre, String coste, String color, int fuerza, int resistencia, String tipodecarta, String subtipo, String rareza, String extension, String textodelacarta) {
+		setNombre(nombre);
+		setCoste(coste);
+		setColor(color);
+		setFuerza(fuerza);
+		setResistencia(resistencia);
+		setTipodecarta(tipodecarta);
+		setSubtipo(subtipo);
+		setRareza(rareza);
+		setExtension(extension);
+		setTextodelacarta(textodelacarta);
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public String getCoste() {
+		return coste;
 	}
 	
-	public boolean comprobarCartas() {
-		String error;
-		boolean result=true;
+	public String getColor() {
+		return color;
+	}
+
+	public int getFuerza() {
+		return fuerza;
+	}
+
+	public int getResistencia() {
+		return resistencia;
+	}
+
+	public String getTipodecarta() {
+		return tipodecarta;
+	}
+	
+	public String getSubtipo() {
+		return subtipo;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public void setCoste(String coste) {
+		this.coste = coste;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public void setFuerza(int fuerza) {
+		this.fuerza = fuerza;
+	}
+
+	public void setResistencia(int resistencia) {
+		this.resistencia = resistencia;
+	}
+
+
+	public void setTipodecarta(String tipodecarta) {
+		this.tipodecarta = tipodecarta;
+	}
+
+	public String getTextodelacarta() {
+		return textodelacarta;
+	}
+	
+	public String getRareza() {
+		return rareza;
+	}
+	
+	public void setSubtipo(String subtipo) {
+		this.subtipo = subtipo;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+	public void setRareza(String rareza) {
+		this.rareza = rareza;
+	}
+
+	public void setTextodelacarta(String textodelacarta) {
+		this.textodelacarta = textodelacarta;
+	}
+
+	public boolean anadirCartas() {
+		boolean resultado = comprobarNombre();
+		String fuerzayresistencia = convertirString(getFuerza())+"/"+convertirString(getResistencia());
 		
+		if (!resultado) {
+			Connection conexion = Conexion.open();
+			String consulta = "INSERT INTO cartas (nombre, coste, fuerzairesistencia, textodelacarta, idColor, idTipoDeCarta, idRareza, idSubtipo, idExpansion) VALUES (?,?,?,?,(SELECT idColor FROM color where nombre = '"+getColor()+"'),(SELECT idTipoDeCarta FROM tipodecarta where nombre = '"+getTipodecarta()+"'),(SELECT idRareza FROM rareza where nombre = '"+getRareza()+"'),(SELECT idSubtipo FROM subtipo where nombre = '"+getSubtipo()+"'),(SELECT idExpansion FROM expansion where nombre = '"+getExtension()+"'));";
+			try {
+				PreparedStatement pst = conexion.prepareStatement(consulta);
+				pst.setString(1, getNombre());
+				pst.setString(2, getCoste());
+				pst.setString(3, fuerzayresistencia);
+				pst.setString(4, getTextodelacarta());
+				
+				if (pst.executeUpdate() == 1) {
+					JOptionPane.showMessageDialog(null, "Tu carta ha sido creado correctamente");
+				}else {
+					System.out.println("Ha habido un error");
+					resultado = false;
+				}
+				
+			} catch (Exception e) {
+				System.out.println(e);
+				resultado = false;
+			}
+		}else {
+			
+		}
+		return resultado;
+	}
+	
+	public boolean comprobarNombre() {
+		Connection conexion = Conexion.open();
+		String consulta = "SELECT * FROM cartas WHERE nombre = '"+getNombre()+"';";
+		boolean result = true;
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			ResultSet respuesta = pst.executeQuery();
+			if (!respuesta.next()) {
+				result = false;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		return result;
+	}
+
+	public String convertirString(int numero) {
+		String resultado = "";
+		if (numero < 0) {
+			resultado = "*";
+		}else {
+			resultado += numero;
+		}
+		return resultado;
 	}
 }
