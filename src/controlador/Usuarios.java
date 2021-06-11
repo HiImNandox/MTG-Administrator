@@ -61,8 +61,8 @@ public class Usuarios {
 		}
 	}
 
-	public boolean iniciarSesion() {
-		boolean resultado = false;
+	public int iniciarSesion() {
+		int resultado = 0;
 		consulta = "SELECT * from usuarios WHERE usuario = '"+getUsuario()+"' and contrasena = '"+getContrasena()+"';";
 		Connection conexion = Conexion.open();
 		try {
@@ -70,7 +70,7 @@ public class Usuarios {
 			ResultSet respuesta = pst.executeQuery();
 			if (respuesta.next()) {
 				JOptionPane.showMessageDialog(null, "Usuario correcto");
-				resultado = true;
+				resultado = respuesta.getInt("idUser");
 			}else {
 				System.out.println("no existe");
 			}

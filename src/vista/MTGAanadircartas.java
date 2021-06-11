@@ -1,6 +1,5 @@
 package vista;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -9,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 
 import bdd.Conexion;
 import controlador.Cartas;
+import vista.Paneles.MTGAcartas;
 
 import java.awt.Toolkit;
 import javax.swing.JLabel;
@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 import javax.swing.JButton;
-import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
@@ -27,18 +26,26 @@ import java.util.ArrayList;
 import javax.swing.SpinnerNumberModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class MTGAanadircartas extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtNombre;
 	private JTextField txtCoste;
 	public JSpinner spinFuerza = new JSpinner();
 	public JSpinner spinResistencia = new JSpinner();
+	static int buscar;
+	public JComboBox<String> cmbExpansion = new JComboBox<String>();
+	public JComboBox<String> cmbTipoDeCarta = new JComboBox<String>();
+	public JComboBox<String> cmbRareza = new JComboBox<String>();
+	public JComboBox<String> cmbSubtipo = new JComboBox<String>();
+	public JComboBox<String> cmbColor = new JComboBox<String>();
+	public JTextPane txtpaneTextoDeCarta = new JTextPane();
+	public JButton btnCrear = new JButton("Crear Carta");
 
 	/**
 	 * Launch the application.
@@ -47,7 +54,7 @@ public class MTGAanadircartas extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MTGAanadircartas frame = new MTGAanadircartas();
+					MTGAanadircartas frame = new MTGAanadircartas(buscar);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -59,7 +66,10 @@ public class MTGAanadircartas extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MTGAanadircartas() {
+	@SuppressWarnings("deprecation")
+	public MTGAanadircartas(int buscarr) {
+		setResizable(false);
+		buscar=buscarr;
 		setTitle("A\u00F1adir Carta");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MTGAanadircartas.class.getResource("/img/logo.jpg")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -91,7 +101,7 @@ public class MTGAanadircartas extends JFrame {
 		lblNewLabel_2.setBounds(10, 67, 66, 14);
 		contentPane.add(lblNewLabel_2);
 		
-		JComboBox<String> cmbExpansion = new JComboBox<String>();
+		
 		cmbExpansion.setBounds(10, 92, 220, 22);
 		contentPane.add(cmbExpansion);
 		
@@ -99,7 +109,7 @@ public class MTGAanadircartas extends JFrame {
 		lblNewLabel_3.setBounds(280, 67, 46, 14);
 		contentPane.add(lblNewLabel_3);
 		
-		JComboBox<String> cmbRareza = new JComboBox<String>();
+
 		cmbRareza.setBounds(280, 92, 122, 22);
 		contentPane.add(cmbRareza);
 		
@@ -107,13 +117,28 @@ public class MTGAanadircartas extends JFrame {
 		lblNewLabel_4.setBounds(10, 125, 92, 14);
 		contentPane.add(lblNewLabel_4);
 		
-		JComboBox<String> cmbTipoDeCarta = new JComboBox<String>();
-		cmbTipoDeCarta.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
+
+		cmbTipoDeCarta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Encantamiento")) {
 					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(false);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Criatura")) {
+					spinFuerza.setEnabled(true);
+					spinResistencia.setEnabled(true);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Planeswalker")) {
 					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(true);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Artefacto")) {
+					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(false);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Tierra")) {
+					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(false);
 				}
 			}
 		});
@@ -125,7 +150,7 @@ public class MTGAanadircartas extends JFrame {
 		lblNewLabel_5.setBounds(280, 125, 46, 14);
 		contentPane.add(lblNewLabel_5);
 		
-		JComboBox<String> cmbSubtipo = new JComboBox<String>();
+		
 		cmbSubtipo.setBounds(280, 150, 122, 22);
 		contentPane.add(cmbSubtipo);
 		
@@ -151,11 +176,11 @@ public class MTGAanadircartas extends JFrame {
 		lblNewLabel_8.setBounds(163, 199, 46, 14);
 		contentPane.add(lblNewLabel_8);
 		
-		JComboBox<String> cmbColor = new JComboBox<String>();
+		
 		cmbColor.setBounds(114, 223, 153, 22);
 		contentPane.add(cmbColor);
 		
-		JButton btnCrear = new JButton("Crear Carta");
+		
 		btnCrear.setBounds(151, 543, 116, 23);
 		contentPane.add(btnCrear);
 		
@@ -167,7 +192,7 @@ public class MTGAanadircartas extends JFrame {
 		scrollPane.setBounds(10, 307, 392, 225);
 		contentPane.add(scrollPane);
 		
-		JTextPane txtpaneTextoDeCarta = new JTextPane();
+
 		scrollPane.setViewportView(txtpaneTextoDeCarta);
 		
 
@@ -175,16 +200,25 @@ public class MTGAanadircartas extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Cartas carta = new Cartas(txtNombre.getText(),txtCoste.getText(),cmbColor.getSelectedItem().toString(),(Integer) spinFuerza.getValue(),(Integer) spinResistencia.getValue(),cmbTipoDeCarta.getSelectedItem().toString(),cmbSubtipo.getSelectedItem().toString(),cmbRareza.getSelectedItem().toString(),cmbExpansion.getSelectedItem().toString(),txtpaneTextoDeCarta.getText());
-
-				if (!carta.anadirCartas()) {
-					JOptionPane.showMessageDialog (null, "Esta carta ya existe", "Error", JOptionPane.ERROR_MESSAGE);
+				if (buscar == 0) {
+					if (!carta.anadirCartas()) {
+						JOptionPane.showMessageDialog (null, "Esta carta ya existe", "Error", JOptionPane.ERROR_MESSAGE);
+					}else {
+						dispose();
+					}
+				}else {
+					if (carta.editarCarta(cmbColor.getSelectedIndex()+1, cmbTipoDeCarta.getSelectedIndex()+1, cmbRareza.getSelectedIndex()+1, cmbSubtipo.getSelectedIndex()+1, cmbExpansion.getSelectedIndex()+1, buscarr)) {
+						dispose();
+					}
 				}
 			}
 		});
 
 		
 		llenarTodosLosCombobox(cmbExpansion,cmbRareza,cmbSubtipo,cmbTipoDeCarta,cmbColor);
-		
+		if (buscar != 0) {
+			editarCartas();
+		}
 	}
 	
     public static ArrayList<String> llenarCombo(String tabla){
@@ -230,5 +264,44 @@ public class MTGAanadircartas extends JFrame {
     	for (int i = 0;i<lista.size();i++) {
     		color.addItem(lista.get(i));
     	}
+    }
+
+    public void editarCartas() {
+    	String consulta = "SELECT * FROM cartas WHERE idCarta = "+buscar;
+    	Connection conexion = Conexion.open();
+    	try {
+        	PreparedStatement sentencia = conexion.prepareStatement(consulta);
+            ResultSet resultado = sentencia.executeQuery();
+            while(resultado.next()) {
+            	txtNombre.setText(resultado.getString("nombre"));
+            	txtCoste.setText(resultado.getString("coste"));
+            	cmbExpansion.setSelectedIndex(resultado.getInt("idExpansion")-1);;
+            	cmbRareza.setSelectedIndex(resultado.getInt("idRareza")-1);
+            	cmbSubtipo.setSelectedIndex(resultado.getInt("idSubTipo")-1);
+            	cmbColor.setSelectedIndex(resultado.getInt("idColor")-1);
+            	cmbTipoDeCarta.setSelectedIndex(resultado.getInt("idTipoDeCarta")-1);
+            	txtpaneTextoDeCarta.setText(resultado.getString("textodelacarta"));
+            	ponerfuerzayresistencia(resultado.getString("fuerzairesistencia"));
+            	btnCrear.setText("Editar Carta");
+            }
+            System.out.println("Se han rellenado el combobox");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    @SuppressWarnings("deprecation")
+	public void ponerfuerzayresistencia(String texto) {
+    	if (cmbTipoDeCarta.getSelectedItem().toString().equals("Criatura")) {
+			String[] fuerzaresistencia = texto.split("/");
+			spinFuerza.setValue(Integer.valueOf(fuerzaresistencia[0]));
+			spinResistencia.setValue(Integer.valueOf(fuerzaresistencia[1]));
+		}else if (cmbTipoDeCarta.getSelectedItem().toString().equals("Planeswalker")) {
+			spinResistencia.setValue(Integer.valueOf(texto));
+		}else {
+			spinFuerza.disable();
+			spinResistencia.disable();
+		}
+    	
     }
 }

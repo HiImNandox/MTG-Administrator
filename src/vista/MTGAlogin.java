@@ -72,9 +72,11 @@ public class MTGAlogin extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Usuarios cargarUsuario = new Usuarios(txtUsuario.getText(), String.valueOf(txtContrasena.getPassword()), "");
-				boolean siguientePestana = cargarUsuario.iniciarSesion();
-				if (siguientePestana) {
-					MTGAaplicacion a = new MTGAaplicacion();
+				int siguientePestana = cargarUsuario.iniciarSesion();
+				if (siguientePestana == 0) {
+
+				}else {
+					MTGAaplicacion a = new MTGAaplicacion(siguientePestana);
 					a.setVisible(true);
 
 					dispose();

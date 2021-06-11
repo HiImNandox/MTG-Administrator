@@ -19,7 +19,7 @@ public class Fuente {
 	
 	public Fuente() {
 		try {
-			Font normalFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("fonts/mtgfont.ttf"));
+			Font normalFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("mtgfont.ttf"));
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			ge.registerFont(normalFont);
 		} catch (Exception e) {

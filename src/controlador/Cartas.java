@@ -116,6 +116,12 @@ public class Cartas {
 	public boolean anadirCartas() {
 		boolean resultado = comprobarNombre();
 		String fuerzayresistencia = convertirString(getFuerza())+"/"+convertirString(getResistencia());
+		if (getTipodecarta().equals("Encantamiento") || getTipodecarta().equals("Artefacto") || getTipodecarta().equals("Tierra")) {
+			fuerzayresistencia = "";
+		}
+		if (getTipodecarta().equals("Planeswalker")) {
+			fuerzayresistencia = ""+getResistencia();
+		}
 		
 		if (!resultado) {
 			Connection conexion = Conexion.open();
@@ -169,5 +175,37 @@ public class Cartas {
 			resultado += numero;
 		}
 		return resultado;
+	}
+	
+	public boolean editarCarta(int color, int tipodecarta, int rareza, int subtipo, int expansion, int idcarta) {
+		boolean comprobar = true;
+		String fuerzayresistencia = new String();
+		if (getTipodecarta().equals("Encantamiento") || getTipodecarta().equals("Artefacto") || getTipodecarta().equals("Tierra")) {
+			fuerzayresistencia = "";
+		}else if (getTipodecarta().equals("Planeswalker")) {
+			fuerzayresistencia = ""+getResistencia();
+		} else {
+			fuerzayresistencia = convertirString(getFuerza())+"/"+convertirString(getResistencia());
+		}
+		
+			Connection conexion = Conexion.open();
+			String consulta = "UPDATE cartas SET nombre = '"+getNombre()+"', coste = '"+getCoste()+"', fuerzairesistencia = '"+fuerzayresistencia+"', textodelacarta = '"+getTextodelacarta()+"', idColor = "+color+", idTipoDeCarta = "+tipodecarta+", idRareza = "+rareza+", idSubtipo = "+subtipo+", idExpansion = "+expansion+" where idCarta = "+idcarta;
+			System.out.println(consulta);
+			try {
+				PreparedStatement pst = conexion.prepareStatement(consulta);
+				
+				if (pst.executeUpdate() == 1) {
+					JOptionPane.showMessageDialog(null, "Tu carta ha sido editada correctamente");
+				}else {
+					System.out.println("Ha habido un error");
+					comprobar = false;
+				}
+				
+			} catch (Exception e) {
+				System.out.println(e);
+				comprobar = false;
+			}
+			
+		return comprobar;
 	}
 }

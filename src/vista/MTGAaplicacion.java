@@ -23,10 +23,11 @@ public class MTGAaplicacion extends JFrame {
 	final static String VENTANA1 = "Card with MTGAperfil";
 	final static String VENTANA2 = "Card with MTGAcartas";
 	final static String VENTANA3 = "Card with MTGAbiblioteca";
+	public static int id;
 	
-	MTGAperfil perfil = new MTGAperfil();
-	MTGAcartas cartas = new MTGAcartas();
-	MTGAbiblioteca biblioteca = new MTGAbiblioteca();
+	MTGAperfil perfil ;
+	MTGAcartas cartas ;
+	MTGAbiblioteca biblioteca ;
 	/**
 	 * Launch the application.
 	 */
@@ -34,7 +35,7 @@ public class MTGAaplicacion extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MTGAaplicacion frame = new MTGAaplicacion();
+					MTGAaplicacion frame = new MTGAaplicacion(id);
 					frame.setVisible(true);
 
 				} catch (Exception e) {
@@ -47,7 +48,13 @@ public class MTGAaplicacion extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MTGAaplicacion() {
+	public MTGAaplicacion(int idd) {
+		id = idd;
+		System.out.println(id);
+		perfil = new MTGAperfil();
+		cartas =  new MTGAcartas(id);
+		biblioteca = new MTGAbiblioteca();
+		setResizable(false);
 
 		setTitle("MTG Administrator - Perfil");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MTGAaplicacion.class.getResource("/img/logo.jpg")));
