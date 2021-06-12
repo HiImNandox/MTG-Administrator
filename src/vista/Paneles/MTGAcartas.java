@@ -7,6 +7,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.mysql.cj.xdevapi.Result;
+
 import bdd.Conexion;
 import vista.MTGAanadircartas;
 import vista.MTGAanadircartasbiblioteca;
@@ -36,6 +38,7 @@ public class MTGAcartas extends JPanel {
 	private JTable tblSecundario;
 	private JTextField txtNombre;
 	public int id;
+	public MTGAcartas panel = this;
 
 	/**
 	 * Create the panel.
@@ -50,6 +53,13 @@ public class MTGAcartas extends JPanel {
 		add(scrollPrincipal);
 
 		tblPrincipal = new JTable();
+		tblPrincipal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				llenarTablaDueno(tblSecundario);
+				System.out.println("CLICK");
+			}
+		});
 		tblPrincipal.setModel(new DefaultTableModel(
 				new Object[][] { { null, null, null, null, null }, { null, null, null, null, null }, },
 				new String[] { "Nombre", "Tipo De Carta", "Subtipo", "Expansion", "Color" }));
@@ -361,5 +371,45 @@ public class MTGAcartas extends JPanel {
 		popMenu.add(menuItem2);
 		popMenu.add(menuItem3);
 		tblPrincipal.setComponentPopupMenu(popMenu);
+	}
+	
+	public void llenarTablaDueno(JTable tabla) {
+		int id = conseguirID();
+		DefaultTableModel modelo;
+		String consulta = "Select biblioteca.nombre as dueño from conjuntodecartas JOIN biblioteca USING(idBiblioteca) where idCarta = "+id;
+		String[] columnas = { "Dueño", "Biblioteca" };
+		modelo = new DefaultTableModel(null, columnas);
+		String[] fila = new String[5];
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				fila[0] = rs.getString("dueño");
+				fila[1] = obtenerUsuario(rs.getString("dueño"));
+				modelo.addRow(fila);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		tabla.setModel(modelo);
+		
+	}
+	
+	public String obtenerUsuario(String nombre) {
+		String consulta = "Select usuarios.usuario as nombre FROM biblioteca JOIN usuarios USING(idUser) where biblioteca.nombre ='"+nombre+"'";
+		String devolver = new String();
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			ResultSet rs = pst.executeQuery();
+			if (rs.next()) {
+				devolver = rs.getString("nombre");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		return devolver;
 	}
 }

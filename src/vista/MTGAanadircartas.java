@@ -123,6 +123,7 @@ public class MTGAanadircartas extends JFrame {
 				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Encantamiento")) {
 					spinFuerza.setEnabled(false);
 					spinResistencia.setEnabled(false);
+					cmbSubtipo.setEnabled(false);
 				}
 				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Criatura")) {
 					spinFuerza.setEnabled(true);
@@ -135,10 +136,22 @@ public class MTGAanadircartas extends JFrame {
 				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Artefacto")) {
 					spinFuerza.setEnabled(false);
 					spinResistencia.setEnabled(false);
+					cmbSubtipo.setEnabled(false);
 				}
 				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Tierra")) {
 					spinFuerza.setEnabled(false);
 					spinResistencia.setEnabled(false);
+					cmbSubtipo.setEnabled(false);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Instantáneo")) {
+					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(false);
+					cmbSubtipo.setEnabled(false);
+				}
+				if (cmbTipoDeCarta.getSelectedItem().toString().equals("Conjuro")) {
+					spinFuerza.setEnabled(false);
+					spinResistencia.setEnabled(false);
+					cmbSubtipo.setEnabled(false);
 				}
 			}
 		});

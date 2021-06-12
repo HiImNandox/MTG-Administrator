@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import bdd.Conexion;
+import vista.MTGAanadircartas;
 import vista.MTGAverbiblioteca;
 
 import javax.swing.JPopupMenu;
@@ -23,19 +24,22 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class MTGAbiblioteca extends JPanel {
 	private JTextField textField;
-	private JTable table;
+	public JTable table;
+	public int id;
 
 	/**
 	 * Create the panel.
 	 */
-	public MTGAbiblioteca() {
+	public MTGAbiblioteca(int idd) {
 		setLayout(null);
-		
+		id = idd;
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(25, 260, 1018, 373);
 		add(scrollPane);
@@ -89,9 +93,9 @@ public class MTGAbiblioteca extends JPanel {
 		btnBuscarCarta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (cmbDueno.getSelectedItem().toString().equals("Todos") && cmbTipoDeBiblioteca.getSelectedItem().toString().equals("Todos")) {
-					llenarTabla("SELECT biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser)", table);
+					llenarTabla("SELECT biblioteca.idBiblioteca, biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser)", table);
 				}else {
-					String consulta = "SELECT biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser) WHERE";
+					String consulta = "SELECT biblioteca.idBiblioteca, biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser) WHERE";
 					boolean nomaswhere = false;
 
 					if (!cmbDueno.getSelectedItem().toString().equals("Todos")) {
@@ -117,7 +121,7 @@ public class MTGAbiblioteca extends JPanel {
 			}
 		});
 
-		llenarTabla("SELECT biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser)", table);
+		llenarTabla("SELECT biblioteca.idBiblioteca, biblioteca.idBiblioteca, biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser)", table);
 		llenarTodosLosCombobox(cmbDueno, cmbTipoDeBiblioteca);
 		poputTable();
 	}
@@ -136,6 +140,8 @@ public class MTGAbiblioteca extends JPanel {
 				fila[0] = rs.getString("nombre");
 				fila[1] = rs.getString("usuario");
 				fila[2] = rs.getString("tipodebiblioteca");
+				int contador = contarCartas(rs.getInt("idBiblioteca"));
+				fila[3] = contador+"";
 				modelo.addRow(fila);
 			}
 		} catch (Exception e) {
@@ -189,9 +195,16 @@ public class MTGAbiblioteca extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MTGAverbiblioteca a = new MTGAverbiblioteca();
-				a.setVisible(true);
-			}
+				if (table.getSelectedRow() == -1) {
+					JOptionPane.showMessageDialog(null,"Tienes que seleccionar la carta primero","Error",JOptionPane.ERROR_MESSAGE);
+				}else {
+					MTGAverbiblioteca a = new MTGAverbiblioteca((String) table.getModel().getValueAt(table.getSelectedRow(), 0));
+					a.setVisible(true);
+					}
+
+				}
+
+			
 		});
 
 		menuItem2.addActionListener(new ActionListener() {
@@ -207,8 +220,11 @@ public class MTGAbiblioteca extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("lo has pulsado2");
+				if (saberSiEsMia()) {
+					
+				}else {
+					JOptionPane.showMessageDialog(null, "Estas intentando una biblioteca que no es tuya", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		
@@ -217,5 +233,37 @@ public class MTGAbiblioteca extends JPanel {
 		popMenu.add(menuItem2);
 		popMenu.add(menuItem3);
 		table.setComponentPopupMenu(popMenu);
+	}
+
+	public boolean saberSiEsMia() {
+		boolean resultado = false;
+		String consulta = "SELECT * FROM biblioteca where idUser = "+id+" and nombre = '"+(String) table.getModel().getValueAt(table.getSelectedRow(), 0)+"";
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			ResultSet rs = pst.executeQuery();
+			if (rs.next()) {
+				resultado = true;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return resultado;
+	}
+	
+	public int contarCartas(int idddd) {
+		int contador = 0;
+		String consulta = "SELECT count(*) as contar FROM conjuntodecartas where idBiblioteca = "+idddd;
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+            ResultSet resultado = sentencia.executeQuery();
+            while (resultado.next()) {
+				contador = resultado.getInt("contar");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return contador;
 	}
 }

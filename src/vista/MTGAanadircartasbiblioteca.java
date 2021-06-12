@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import bdd.Conexion;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JComboBox;
 import javax.swing.SpinnerNumberModel;
@@ -100,6 +101,11 @@ public class MTGAanadircartasbiblioteca extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancelar");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
@@ -129,7 +135,9 @@ public class MTGAanadircartasbiblioteca extends JDialog {
 	}
 	
 	public void agregarCartaABiblioteca(int cantidad) {
+		int contador = 0;
 		for (int i = 0; i < cantidad; i++) {
+			contador++;
 			String consulta = "INSERT INTO conjuntodecartas (idBiblioteca,idCarta) VALUES ((SELECT idBiblioteca FROM biblioteca where nombre = '"+cmbBiblioteca.getSelectedItem().toString()+"'),(SELECT idCarta FROM cartas where nombre = '"+nombre+"'))";
 			Connection conexion = Conexion.open();
 			try {
@@ -141,5 +149,7 @@ public class MTGAanadircartasbiblioteca extends JDialog {
 				System.out.println(e);
 			}
 		}
+		JOptionPane.showMessageDialog(null, "Se ha añadido un total de "+contador+" copias");
+		dispose();
 	}
 }

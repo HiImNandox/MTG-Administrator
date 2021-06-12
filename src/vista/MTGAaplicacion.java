@@ -53,7 +53,7 @@ public class MTGAaplicacion extends JFrame {
 		System.out.println(id);
 		perfil = new MTGAperfil();
 		cartas =  new MTGAcartas(id);
-		biblioteca = new MTGAbiblioteca();
+		biblioteca = new MTGAbiblioteca(id);
 		setResizable(false);
 
 		setTitle("MTG Administrator - Perfil");

@@ -116,14 +116,15 @@ public class Cartas {
 	public boolean anadirCartas() {
 		boolean resultado = comprobarNombre();
 		String fuerzayresistencia = convertirString(getFuerza())+"/"+convertirString(getResistencia());
-		if (getTipodecarta().equals("Encantamiento") || getTipodecarta().equals("Artefacto") || getTipodecarta().equals("Tierra")) {
+		if (getTipodecarta().equals("Encantamiento") || getTipodecarta().equals("Artefacto") || getTipodecarta().equals("Tierra") || getTipodecarta().equals("Conjuro") || getTipodecarta().equals("Instantáneo")) {
 			fuerzayresistencia = "";
+			setSubtipo(" ");
 		}
 		if (getTipodecarta().equals("Planeswalker")) {
 			fuerzayresistencia = ""+getResistencia();
 		}
 		
-		if (!resultado) {
+		if (resultado) {
 			Connection conexion = Conexion.open();
 			String consulta = "INSERT INTO cartas (nombre, coste, fuerzairesistencia, textodelacarta, idColor, idTipoDeCarta, idRareza, idSubtipo, idExpansion) VALUES (?,?,?,?,(SELECT idColor FROM color where nombre = '"+getColor()+"'),(SELECT idTipoDeCarta FROM tipodecarta where nombre = '"+getTipodecarta()+"'),(SELECT idRareza FROM rareza where nombre = '"+getRareza()+"'),(SELECT idSubtipo FROM subtipo where nombre = '"+getSubtipo()+"'),(SELECT idExpansion FROM expansion where nombre = '"+getExtension()+"'));";
 			try {
@@ -153,12 +154,13 @@ public class Cartas {
 	public boolean comprobarNombre() {
 		Connection conexion = Conexion.open();
 		String consulta = "SELECT * FROM cartas WHERE nombre = '"+getNombre()+"';";
-		boolean result = true;
+		boolean result = false;
 		try {
 			PreparedStatement pst = conexion.prepareStatement(consulta);
 			ResultSet respuesta = pst.executeQuery();
 			if (!respuesta.next()) {
-				result = false;
+				System.out.println("Lo he cambiado a true");
+				result = true;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
