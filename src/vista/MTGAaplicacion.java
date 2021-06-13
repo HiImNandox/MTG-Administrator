@@ -51,7 +51,7 @@ public class MTGAaplicacion extends JFrame {
 	public MTGAaplicacion(int idd) {
 		id = idd;
 		System.out.println(id);
-		perfil = new MTGAperfil();
+		perfil = new MTGAperfil(id);
 		cartas =  new MTGAcartas(id);
 		biblioteca = new MTGAbiblioteca(id);
 		setResizable(false);

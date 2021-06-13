@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.ListSelectionModel;
+import javax.swing.ImageIcon;
 
 public class MTGAcartas extends JPanel {
 	/**
@@ -36,9 +38,10 @@ public class MTGAcartas extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public JTable tblPrincipal;
 	private JTable tblSecundario;
-	private JTextField txtNombre;
+	public JTextField txtNombre;
 	public int id;
 	public MTGAcartas panel = this;
+	public static JButton btnBuscarCarta = new JButton("Buscar");
 
 	/**
 	 * Create the panel.
@@ -53,6 +56,7 @@ public class MTGAcartas extends JPanel {
 		add(scrollPrincipal);
 
 		tblPrincipal = new JTable();
+		tblPrincipal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblPrincipal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -61,11 +65,23 @@ public class MTGAcartas extends JPanel {
 			}
 		});
 		tblPrincipal.setModel(new DefaultTableModel(
-				new Object[][] { { null, null, null, null, null }, { null, null, null, null, null }, },
-				new String[] { "Nombre", "Tipo De Carta", "Subtipo", "Expansion", "Color" }));
+			new Object[][] {
+			},
+			new String[] {
+				"Nombre", "Tipo de carta", "Subtipo", "Expansion", "Color"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
 		scrollPrincipal.setViewportView(tblPrincipal);
 
-		JLabel lblFoto = new JLabel("Aqui iria una foto\r\n");
+		JLabel lblFoto = new JLabel("");
+		lblFoto.setIcon(new ImageIcon(MTGAcartas.class.getResource("/img/dorso.jpg")));
 		lblFoto.setFont(new Font("Tahoma", Font.PLAIN, 21));
 		lblFoto.setBounds(806, 42, 255, 361);
 		add(lblFoto);
@@ -84,9 +100,9 @@ public class MTGAcartas extends JPanel {
 		add(panelBuscador);
 		panelBuscador.setLayout(null);
 
-		JButton btnBuscarCarta = new JButton("Buscar");
 
-		btnBuscarCarta.setBounds(656, 101, 89, 23);
+
+		btnBuscarCarta.setBounds(623, 101, 122, 23);
 		panelBuscador.add(btnBuscarCarta);
 
 		JLabel lblNewLabel = new JLabel("Nombre");
@@ -129,38 +145,34 @@ public class MTGAcartas extends JPanel {
 		JComboBox<String> cmbcolor = new JComboBox<String>();
 		cmbcolor.setBounds(254, 101, 145, 22);
 		panelBuscador.add(cmbcolor);
-
-		JLabel lblNewLabel_5 = new JLabel("Due\u00F1o");
-		lblNewLabel_5.setBounds(431, 82, 46, 14);
-		panelBuscador.add(lblNewLabel_5);
-
-		JComboBox<String> cmbdueno = new JComboBox<String>();
-		cmbdueno.setBounds(431, 101, 145, 22);
-		panelBuscador.add(cmbdueno);
+		
+		llenarTodosLosCombobox(cmbexpansion, cmbsubtipo, cmbtipodecarta, cmbcolor);
 
 		poputTable();
 		llenarTabla(
 				"Select cartas.nombre, tipodecarta.nombre as tipodecarta, subtipo.nombre as subtipo, expansion.nombre as expansion, color.nombre as color from cartas JOIN tipodecarta USING(idTipoDeCarta) JOIN subtipo USING(idSubtipo) JOIN expansion USING(idExpansion) JOIN color USING(idColor)",
 				tblPrincipal);
-		llenarTodosLosCombobox(cmbexpansion, cmbsubtipo, cmbtipodecarta, cmbcolor, cmbdueno);
 		btnBuscarCarta.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (cmbsubtipo.getSelectedItem().toString().equals("Todos")
 						&& cmbtipodecarta.getSelectedItem().toString().equals("Todos")
 						&& cmbcolor.getSelectedItem().toString().equals("Todos")
-						&& cmbexpansion.getSelectedItem().toString().equals("Todos")) {
+						&& cmbexpansion.getSelectedItem().toString().equals("Todos")
+						&& txtNombre.getText().equals("")) {
 					llenarTabla(
 							"Select cartas.nombre, tipodecarta.nombre as tipodecarta, subtipo.nombre as subtipo, expansion.nombre as expansion, color.nombre as color from cartas JOIN tipodecarta USING(idTipoDeCarta) JOIN subtipo USING(idSubtipo) JOIN expansion USING(idExpansion) JOIN color USING(idColor)",
 							tblPrincipal);
 				} else {
 					String consulta = "Select cartas.nombre, tipodecarta.nombre as tipodecarta, subtipo.nombre as subtipo, expansion.nombre as expansion, color.nombre as color from cartas JOIN tipodecarta USING(idTipoDeCarta) JOIN subtipo USING(idSubtipo) JOIN expansion USING(idExpansion) JOIN color USING(idColor) WHERE";
 					boolean nomaswhere = false;
+					System.out.println(txtNombre.getText()+" rwerwerwe");
 					if (!txtNombre.getText().equals("")) {
 						if (nomaswhere == false) {
 							nomaswhere = true;
+							System.out.println("QQQQQQQQQQ");
 						}
-						consulta += " cartas.nombre = '" + txtNombre.getText() + "'";
+						consulta += " cartas.nombre like '%" + txtNombre.getText() + "%'";
 					}
 
 					if (!cmbsubtipo.getSelectedItem().toString().equals("Todos")) {
@@ -219,6 +231,7 @@ public class MTGAcartas extends JPanel {
 		modelo = new DefaultTableModel(null, columnas);
 		String[] fila = new String[5];
 		Connection conexion = Conexion.open();
+		System.out.println(consulta);
 		try {
 			PreparedStatement pst = conexion.prepareStatement(consulta);
 			ResultSet rs = pst.executeQuery();
@@ -256,27 +269,8 @@ public class MTGAcartas extends JPanel {
 		return lista;
 	}
 
-	public static ArrayList<String> llenarDueno() {
-		ArrayList<String> lista = new ArrayList<String>();
-		String q = "SELECT * from usuarios";
-		Connection conexion = Conexion.open();
-		try {
-			PreparedStatement sentencia = conexion.prepareStatement(q);
-			ResultSet resultado = sentencia.executeQuery();
-			lista.add("Cualquiera");
-			while (resultado.next()) {
-				lista.add(resultado.getString("usuario"));
-			}
-			System.out.println("Se han rellenado el combobox");
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-
-		return lista;
-	}
-
 	public void llenarTodosLosCombobox(JComboBox<String> expansion, JComboBox<String> subtipo,
-			JComboBox<String> tipodecarta, JComboBox<String> color, JComboBox<String> dueno) {
+			JComboBox<String> tipodecarta, JComboBox<String> color) {
 		ArrayList<String> lista = llenarCombo("expansion");
 		for (int i = 0; i < lista.size(); i++) {
 			expansion.addItem(lista.get(i));
@@ -294,10 +288,6 @@ public class MTGAcartas extends JPanel {
 		lista = llenarCombo("color");
 		for (int i = 0; i < lista.size(); i++) {
 			color.addItem(lista.get(i));
-		}
-		lista = llenarDueno();
-		for (int i = 0; i < lista.size(); i++) {
-			dueno.addItem(lista.get(i));
 		}
 	}
 
@@ -332,7 +322,7 @@ public class MTGAcartas extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				MTGAanadircartas a = new MTGAanadircartas(0);
+				MTGAanadircartas a = new MTGAanadircartas(0,btnBuscarCarta);
 				a.setVisible(true);
 			}
 		});
@@ -359,7 +349,7 @@ public class MTGAcartas extends JPanel {
 					if (id == 0) {
 						JOptionPane.showMessageDialog(null,"Hay un error con la base de datos","Error",JOptionPane.ERROR_MESSAGE);
 					}else {
-						MTGAanadircartas a = new MTGAanadircartas(id);
+						MTGAanadircartas a = new MTGAanadircartas(id,btnBuscarCarta);
 						a.setVisible(true);
 					}
 

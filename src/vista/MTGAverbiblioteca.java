@@ -1,6 +1,5 @@
 package vista;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -10,12 +9,14 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -27,8 +28,16 @@ public class MTGAverbiblioteca extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtNombre;
-	private JTable table;
+	public JTable table;
 	public static String nombre;
+	public static int id;
+	public ArrayList<Integer> lista = new ArrayList<Integer>();
+	public JComboBox<String> cmbtipodecarta = new JComboBox<String>();
+	public JComboBox<String> cmbsubtipo = new JComboBox<String>();
+	public JComboBox<String> cmbexpansion = new JComboBox<String>();
+	public JComboBox<String> cmbcolor = new JComboBox<String>();
+	public static JButton btnNewButton = new JButton("A\u00F1adir cartas");
+	public static JButton btnBuscarCarta = new JButton("Buscar");
 
 	/**
 	 * Launch the application.
@@ -37,7 +46,7 @@ public class MTGAverbiblioteca extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MTGAverbiblioteca frame = new MTGAverbiblioteca(nombre);
+					MTGAverbiblioteca frame = new MTGAverbiblioteca(nombre,id);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -49,8 +58,9 @@ public class MTGAverbiblioteca extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MTGAverbiblioteca(String nombres) {
+	public MTGAverbiblioteca(String nombres,int idd) {
 		nombre = nombres;
+		id =idd;
 		setTitle(nombre);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MTGAverbiblioteca.class.getResource("/img/logo.jpg")));
 		setResizable(false);
@@ -69,7 +79,12 @@ public class MTGAverbiblioteca extends JFrame {
 		contentPane.add(panelBuscador);
 		
 		JButton btnBuscarCarta = new JButton("Buscar");
-		btnBuscarCarta.setBounds(656, 101, 89, 23);
+		btnBuscarCarta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				llenar();
+			}
+		});
+		btnBuscarCarta.setBounds(641, 101, 89, 23);
 		panelBuscador.add(btnBuscarCarta);
 		
 		JLabel lblNewLabel = new JLabel("Nombre");
@@ -82,44 +97,61 @@ public class MTGAverbiblioteca extends JFrame {
 		panelBuscador.add(txtNombre);
 		
 		JLabel lblNewLabel_1 = new JLabel("Tipo de Carta");
-		lblNewLabel_1.setBounds(254, 32, 73, 14);
+		lblNewLabel_1.setBounds(254, 32, 145, 14);
 		panelBuscador.add(lblNewLabel_1);
 		
-		JComboBox cmbTipoDeCarta = new JComboBox();
-		cmbTipoDeCarta.setBounds(254, 49, 145, 22);
-		panelBuscador.add(cmbTipoDeCarta);
+
+		cmbtipodecarta.setBounds(254, 49, 145, 22);
+		panelBuscador.add(cmbtipodecarta);
 		
 		JLabel lblNewLabel_2 = new JLabel("Subtipo");
 		lblNewLabel_2.setBounds(431, 32, 64, 14);
 		panelBuscador.add(lblNewLabel_2);
 		
-		JComboBox cmbSubtipo = new JComboBox();
-		cmbSubtipo.setBounds(431, 49, 145, 22);
-		panelBuscador.add(cmbSubtipo);
+
+		cmbsubtipo.setBounds(431, 49, 145, 22);
+		panelBuscador.add(cmbsubtipo);
 		
 		JLabel lblNewLabel_3 = new JLabel("Expansion");
 		lblNewLabel_3.setBounds(10, 81, 73, 14);
 		panelBuscador.add(lblNewLabel_3);
 		
-		JComboBox cmbExpansion = new JComboBox();
-		cmbExpansion.setBounds(10, 101, 212, 22);
-		panelBuscador.add(cmbExpansion);
+
+		cmbexpansion.setBounds(10, 101, 212, 22);
+		panelBuscador.add(cmbexpansion);
 		
 		JLabel lblNewLabel_4 = new JLabel("Color");
 		lblNewLabel_4.setBounds(254, 81, 46, 14);
 		panelBuscador.add(lblNewLabel_4);
 		
-		JComboBox cmbColor = new JComboBox();
-		cmbColor.setBounds(254, 101, 145, 22);
-		panelBuscador.add(cmbColor);
+
+		cmbcolor.setBounds(254, 101, 145, 22);
+		panelBuscador.add(cmbcolor);
 		
-		JButton btnNewButton = new JButton("A\u00F1adir carta");
+		JButton btnNewButton = new JButton("A\u00F1adir cartas");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MTGAanadircartabiblioteca a = new MTGAanadircartabiblioteca(nombres,btnBuscarCarta);
+				a.setVisible(true);
+			}
+		});
 		btnNewButton.setBounds(849, 77, 135, 23);
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Eliminar Carta");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (table.getSelectedRow() == -1) {
+					JOptionPane.showMessageDialog(null,"Tienes que seleccionar la carta primero","Error",JOptionPane.ERROR_MESSAGE);
+				}else {
+					if (sabersiesmia()) {
+						eliminarCarta(lista.get(table.getSelectedRow()));
+						llenar();
+					}else {
+						JOptionPane.showMessageDialog(null,"Estas intentando eliminar una carta que no es tuya","Error",JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
 			}
 		});
 		btnNewButton_1.setBounds(849, 135, 135, 23);
@@ -130,20 +162,17 @@ public class MTGAverbiblioteca extends JFrame {
 		contentPane.add(scrollPane);
 		
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Nombre"
-			}
-		));
+
 		scrollPane.setViewportView(table);
-		String consulta = "SELECT cartas.nombre, expansion.nombre as expansion, tipodecarta.nombre as tipodecarta , subtipo.nombre as subtipo, color.nombre as color FROM cartas JOIN conjuntodecartas USING (idCarta) JOIN expansion USING (idExpansion) JOIN tipodecarta USING (idTipoDeCarta) JOIN subtipo USING (idSubtipo) JOIN color USING (idColor) JOIN biblioteca USING(idBiblioteca) WHERE biblioteca.nombre = '"+nombre+"'";
-		llenarTablar(consulta, table);
+		String consulta = "SELECT conjuntodecartas.idConjuntoDeCartas,cartas.nombre, expansion.nombre as expansion, tipodecarta.nombre as tipodecarta , subtipo.nombre as subtipo, color.nombre as color FROM cartas JOIN conjuntodecartas USING (idCarta) JOIN expansion USING (idExpansion) JOIN tipodecarta USING (idTipoDeCarta) JOIN subtipo USING (idSubtipo) JOIN color USING (idColor) JOIN biblioteca USING(idBiblioteca) WHERE biblioteca.nombre = '"+nombre+"'";
+		llenarTabla(consulta, table);
+		llenarTodosLosCombobox(cmbexpansion, cmbsubtipo, cmbtipodecarta, cmbcolor, cmbcolor);
 	}
 	
-	public void llenarTablar(String consulta, JTable tabla) {
+	public void llenarTabla(String consulta, JTable tabla) {
 		DefaultTableModel modelo;
+		lista.clear();
+		System.out.println(consulta);
 		String[] columnas = { "Nombre", "Tipo de carta", "Subtipo", "Expansion", "Color" };
 		modelo = new DefaultTableModel(null, columnas);
 		String[] fila = new String[5];
@@ -157,11 +186,127 @@ public class MTGAverbiblioteca extends JFrame {
 				fila[2] = rs.getString("subtipo");
 				fila[3] = rs.getString("expansion");
 				fila[4] = rs.getString("color");
+				lista.add(rs.getInt("idConjuntoDeCartas"));
+				System.out.println(rs.getInt("idConjuntoDeCartas"));
 				modelo.addRow(fila);
 			}
 		} catch (Exception e) {
+			System.out.println("AAAAAAAAAAAAAAAAAAAAA");
 			System.out.println(e);
 		}
 		tabla.setModel(modelo);
+	}
+	
+	public void llenar() {
+		if (cmbsubtipo.getSelectedItem().toString().equals("Todos")
+				&& cmbtipodecarta.getSelectedItem().toString().equals("Todos")
+				&& cmbcolor.getSelectedItem().toString().equals("Todos")
+				&& cmbexpansion.getSelectedItem().toString().equals("Todos")) {
+			llenarTabla(
+					"SELECT conjuntodecartas.idConjuntoDeCartas,cartas.nombre, expansion.nombre as expansion, tipodecarta.nombre as tipodecarta , subtipo.nombre as subtipo, color.nombre as color FROM cartas JOIN conjuntodecartas USING (idCarta) JOIN expansion USING (idExpansion) JOIN tipodecarta USING (idTipoDeCarta) JOIN subtipo USING (idSubtipo) JOIN color USING (idColor) JOIN biblioteca USING(idBiblioteca) WHERE biblioteca.nombre = '"+nombre+"'",table);
+		} else {
+			String consulta = "SELECT conjuntodecartas.idConjuntoDeCartas,cartas.nombre, expansion.nombre as expansion, tipodecarta.nombre as tipodecarta , subtipo.nombre as subtipo, color.nombre as color FROM cartas JOIN conjuntodecartas USING (idCarta) JOIN expansion USING (idExpansion) JOIN tipodecarta USING (idTipoDeCarta) JOIN subtipo USING (idSubtipo) JOIN color USING (idColor) JOIN biblioteca USING(idBiblioteca) WHERE biblioteca.nombre = '"+nombre+"'";
+			if (!txtNombre.getText().equals("")) {
+				consulta += " and cartas.nombre = '" + txtNombre.getText() + "'";
+			}
+
+			if (!cmbsubtipo.getSelectedItem().toString().equals("Todos")) {
+
+				consulta += " and subtipo.nombre = '" + cmbsubtipo.getSelectedItem().toString() + "'";
+
+			}
+
+			if (!cmbtipodecarta.getSelectedItem().toString().equals("Todos")) {
+
+				consulta += " and tipodecarta.nombre = '" + cmbtipodecarta.getSelectedItem().toString() + "'";
+
+			}
+
+			if (!cmbexpansion.getSelectedItem().toString().equals("Todos")) {
+
+				consulta += " and expansion.nombre = '" + cmbexpansion.getSelectedItem().toString() + "'";
+
+			}
+
+			if (!cmbcolor.getSelectedItem().toString().equals("Todos")) {
+
+				consulta += "and color.nombre = '" + cmbcolor.getSelectedItem().toString() + "'";
+			}
+
+			System.out.println(consulta);
+			llenarTabla(consulta,table);
+		}
+	}
+	
+	public void eliminarCarta(int fila) {
+		String consulta = "DELETE FROM conjuntodecartas where idConjuntoDeCartas = "+fila;
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			pst.executeUpdate();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public static ArrayList<String> llenarCombo(String tabla) {
+
+		ArrayList<String> lista = new ArrayList<String>();
+		String q = "SELECT nombre from " + tabla;
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement sentencia = conexion.prepareStatement(q);
+			ResultSet resultado = sentencia.executeQuery();
+			lista.add("Todos");
+			while (resultado.next()) {
+				lista.add(resultado.getString("nombre"));
+			}
+			System.out.println("Se han rellenado el combobox");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+		return lista;
+	}
+	
+	public void llenarTodosLosCombobox(JComboBox<String> expansion, JComboBox<String> subtipo,
+			JComboBox<String> tipodecarta, JComboBox<String> color, JComboBox<String> dueno) {
+		ArrayList<String> lista = llenarCombo("expansion");
+		for (int i = 0; i < lista.size(); i++) {
+			expansion.addItem(lista.get(i));
+		}
+
+		lista = llenarCombo("subtipo");
+		for (int i = 0; i < lista.size(); i++) {
+			subtipo.addItem(lista.get(i));
+		}
+
+		lista = llenarCombo("tipodecarta");
+		for (int i = 0; i < lista.size(); i++) {
+			tipodecarta.addItem(lista.get(i));
+		}
+		lista = llenarCombo("color");
+		for (int i = 0; i < lista.size(); i++) {
+			color.addItem(lista.get(i));
+		}
+		
+	}
+	
+	public boolean sabersiesmia() {
+		boolean resultado = false;
+		
+		String q = "SELECT * from biblioteca where nombre ='"+nombre+"' and idUser = "+id;
+		Connection conexion = Conexion.open();
+		try {
+			PreparedStatement sentencia = conexion.prepareStatement(q);
+			ResultSet e = sentencia.executeQuery();
+			while (e.next()) {
+				resultado = true;
+			}
+			System.out.println("Se han rellenado el combobox");
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return resultado;
 	}
 }

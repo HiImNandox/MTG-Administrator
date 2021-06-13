@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import javax.swing.SpinnerNumberModel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 
 public class MTGAanadircartas extends JFrame {
 
@@ -46,6 +47,7 @@ public class MTGAanadircartas extends JFrame {
 	public JComboBox<String> cmbColor = new JComboBox<String>();
 	public JTextPane txtpaneTextoDeCarta = new JTextPane();
 	public JButton btnCrear = new JButton("Crear Carta");
+	public static JButton boton;
 
 	/**
 	 * Launch the application.
@@ -54,7 +56,7 @@ public class MTGAanadircartas extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MTGAanadircartas frame = new MTGAanadircartas(buscar);
+					MTGAanadircartas frame = new MTGAanadircartas(buscar,boton);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -67,9 +69,10 @@ public class MTGAanadircartas extends JFrame {
 	 * Create the frame.
 	 */
 	@SuppressWarnings("deprecation")
-	public MTGAanadircartas(int buscarr) {
+	public MTGAanadircartas(int buscarr, JButton botonn) {
 		setResizable(false);
 		buscar=buscarr;
+		boton = botonn;
 		setTitle("A\u00F1adir Carta");
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MTGAanadircartas.class.getResource("/img/logo.jpg")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -204,6 +207,7 @@ public class MTGAanadircartas extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 307, 392, 225);
 		contentPane.add(scrollPane);
+		txtpaneTextoDeCarta.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		
 
 		scrollPane.setViewportView(txtpaneTextoDeCarta);
@@ -217,10 +221,12 @@ public class MTGAanadircartas extends JFrame {
 					if (!carta.anadirCartas()) {
 						JOptionPane.showMessageDialog (null, "Esta carta ya existe", "Error", JOptionPane.ERROR_MESSAGE);
 					}else {
+						boton.doClick();
 						dispose();
 					}
 				}else {
 					if (carta.editarCarta(cmbColor.getSelectedIndex()+1, cmbTipoDeCarta.getSelectedIndex()+1, cmbRareza.getSelectedIndex()+1, cmbSubtipo.getSelectedIndex()+1, cmbExpansion.getSelectedIndex()+1, buscarr)) {
+						boton.doClick();
 						dispose();
 					}
 				}

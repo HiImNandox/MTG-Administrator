@@ -126,7 +126,7 @@ public class Cartas {
 		
 		if (resultado) {
 			Connection conexion = Conexion.open();
-			String consulta = "INSERT INTO cartas (nombre, coste, fuerzairesistencia, textodelacarta, idColor, idTipoDeCarta, idRareza, idSubtipo, idExpansion) VALUES (?,?,?,?,(SELECT idColor FROM color where nombre = '"+getColor()+"'),(SELECT idTipoDeCarta FROM tipodecarta where nombre = '"+getTipodecarta()+"'),(SELECT idRareza FROM rareza where nombre = '"+getRareza()+"'),(SELECT idSubtipo FROM subtipo where nombre = '"+getSubtipo()+"'),(SELECT idExpansion FROM expansion where nombre = '"+getExtension()+"'));";
+			String consulta = "INSERT INTO cartas (nombre, coste, fuerzairesistencia, textodelacarta, idColor, idTipoDeCarta, idRareza, idSubtipo, idExpansion) VALUES (?,?,?,?,(SELECT idColor FROM color where nombre = '"+getColor()+"'),(SELECT idTipoDeCarta FROM tipodecarta where nombre = '"+getTipodecarta()+"'),(SELECT idRareza FROM rareza where nombre = '"+getRareza()+"'),(SELECT idSubtipo FROM subtipo where nombre = '"+getSubtipo()+"'),(SELECT idExpansion FROM expansion where nombre = '"+getExtension()+"'))";
 			try {
 				PreparedStatement pst = conexion.prepareStatement(consulta);
 				pst.setString(1, getNombre());

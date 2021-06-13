@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import bdd.Conexion;
+import vista.MTGAanadirbiblioteca;
 import vista.MTGAanadircartas;
 import vista.MTGAverbiblioteca;
 
@@ -30,9 +31,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class MTGAbiblioteca extends JPanel {
-	private JTextField textField;
+	private JTextField txtNombre;
 	public JTable table;
 	public int id;
+	public 	JButton btnBuscarCarta = new JButton("Buscar");
 
 	/**
 	 * Create the panel.
@@ -62,7 +64,7 @@ public class MTGAbiblioteca extends JPanel {
 		
 		JButton btnBuscarCarta = new JButton("Buscar");
 
-		btnBuscarCarta.setBounds(845, 69, 89, 23);
+		btnBuscarCarta.setBounds(844, 69, 89, 23);
 		panelBuscador.add(btnBuscarCarta);
 		
 		JLabel lblNewLabel_1 = new JLabel("Due\u00F1o");
@@ -85,22 +87,32 @@ public class MTGAbiblioteca extends JPanel {
 		lblNewLabel_4.setBounds(39, 44, 113, 14);
 		panelBuscador.add(lblNewLabel_4);
 		
-		textField = new JTextField();
-		textField.setBounds(39, 70, 212, 20);
-		panelBuscador.add(textField);
-		textField.setColumns(10);
+		txtNombre = new JTextField();
+		txtNombre.setBounds(39, 70, 212, 20);
+		panelBuscador.add(txtNombre);
+		txtNombre.setColumns(10);
 		
 		btnBuscarCarta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (cmbDueno.getSelectedItem().toString().equals("Todos") && cmbTipoDeBiblioteca.getSelectedItem().toString().equals("Todos")) {
+				if (cmbDueno.getSelectedItem().toString().equals("Todos") && cmbTipoDeBiblioteca.getSelectedItem().toString().equals("Todos") && txtNombre.getText().equals("")) {
 					llenarTabla("SELECT biblioteca.idBiblioteca, biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser)", table);
 				}else {
 					String consulta = "SELECT biblioteca.idBiblioteca, biblioteca.nombre, usuarios.usuario as usuario, tipodebiblioteca.nombre as tipodebiblioteca from biblioteca JOIN tipodebiblioteca USING(idTipoDeBiblioteca) JOIN usuarios USING(idUser) WHERE";
 					boolean nomaswhere = false;
+					
+					if (!txtNombre.getText().equals("")) {
+						if (nomaswhere == false) {
+							nomaswhere = true;
+						}
+						consulta += " biblioteca.nombre like '%" + txtNombre.getText() + "%'";
 
+					}
+					
 					if (!cmbDueno.getSelectedItem().toString().equals("Todos")) {
 						if (nomaswhere == false) {
 							nomaswhere = true;
+						}else {
+							consulta += " and";
 						}
 						consulta += " usuarios.usuario = '" + cmbDueno.getSelectedItem().toString() + "'";
 
@@ -198,7 +210,7 @@ public class MTGAbiblioteca extends JPanel {
 				if (table.getSelectedRow() == -1) {
 					JOptionPane.showMessageDialog(null,"Tienes que seleccionar la carta primero","Error",JOptionPane.ERROR_MESSAGE);
 				}else {
-					MTGAverbiblioteca a = new MTGAverbiblioteca((String) table.getModel().getValueAt(table.getSelectedRow(), 0));
+					MTGAverbiblioteca a = new MTGAverbiblioteca((String) table.getModel().getValueAt(table.getSelectedRow(), 0),id);
 					a.setVisible(true);
 					}
 
@@ -211,8 +223,9 @@ public class MTGAbiblioteca extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("lo has pulsado1");
+
+				MTGAanadirbiblioteca a = new MTGAanadirbiblioteca(id,btnBuscarCarta);
+				a.setVisible(true);
 			}
 		});
 
@@ -221,7 +234,19 @@ public class MTGAbiblioteca extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (saberSiEsMia()) {
-					
+					int input = JOptionPane.showConfirmDialog(null, "Estas seguro que quieres eliminar esta biblioteca?");
+					if (input == 0) {
+						Connection conexion = Conexion.open();
+						String consulta = "DELETE FROM biblioteca WHERE nombre = '"+(String) table.getModel().getValueAt(table.getSelectedRow(), 0)+"'";
+						try {
+							PreparedStatement pst = conexion.prepareStatement(consulta);
+							if (pst.executeUpdate() == 1) {
+								JOptionPane.showMessageDialog(null, "La biblioteca se ha eliminado correctamente");
+							}
+						} catch (Exception e2) {
+							// TODO: handle exception
+						}
+					}
 				}else {
 					JOptionPane.showMessageDialog(null, "Estas intentando una biblioteca que no es tuya", "Error", JOptionPane.ERROR_MESSAGE);
 				}
@@ -237,17 +262,19 @@ public class MTGAbiblioteca extends JPanel {
 
 	public boolean saberSiEsMia() {
 		boolean resultado = false;
-		String consulta = "SELECT * FROM biblioteca where idUser = "+id+" and nombre = '"+(String) table.getModel().getValueAt(table.getSelectedRow(), 0)+"";
+		String consulta = "SELECT * FROM biblioteca where idUser = "+id+" and nombre = '"+(String) table.getModel().getValueAt(table.getSelectedRow(), 0)+"'";
+		System.out.println(consulta);
 		Connection conexion = Conexion.open();
 		try {
 			PreparedStatement pst = conexion.prepareStatement(consulta);
 			ResultSet rs = pst.executeQuery();
 			if (rs.next()) {
+				System.out.println("ESTA EN VERDADERO");
 				resultado = true;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-		}
+			System.out.println(e);
+		}System.out.println(resultado);
 		return resultado;
 	}
 	
@@ -265,5 +292,9 @@ public class MTGAbiblioteca extends JPanel {
 			System.out.println(e);
 		}
 		return contador;
+	}
+	public int d() {
+		
+		return id;
 	}
 }

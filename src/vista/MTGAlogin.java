@@ -104,7 +104,7 @@ public class MTGAlogin extends JFrame {
 		contentPane.add(btnNewButton_1);
 		
 		txtUsuario = new JTextField();
-		txtUsuario.setFont(new Font("Magic:the Gathering", Font.PLAIN, 11));
+		txtUsuario.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtUsuario.setBounds(560, 171, 152, 20);
 		contentPane.add(txtUsuario);
 		txtUsuario.setColumns(10);
@@ -125,8 +125,8 @@ public class MTGAlogin extends JFrame {
 		contentPane.add(lblNewLabel_1_1);
 		
 		txtContrasena = new JPasswordField();
-		txtContrasena.setForeground(Color.RED);
-		txtContrasena.setFont(new Font("Dialog", Font.PLAIN, 15));
+		txtContrasena.setForeground(Color.BLACK);
+		txtContrasena.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtContrasena.setBounds(560, 249, 152, 20);
 		contentPane.add(txtContrasena);
 		
