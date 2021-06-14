@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 import javax.swing.JPasswordField;
@@ -74,7 +75,7 @@ public class MTGAlogin extends JFrame {
 				Usuarios cargarUsuario = new Usuarios(txtUsuario.getText(), String.valueOf(txtContrasena.getPassword()), "");
 				int siguientePestana = cargarUsuario.iniciarSesion();
 				if (siguientePestana == 0) {
-
+					JOptionPane.showMessageDialog(null,"El usuario o la contraseña no es correcto","Error",JOptionPane.ERROR_MESSAGE);
 				}else {
 					MTGAaplicacion a = new MTGAaplicacion(siguientePestana);
 					a.setVisible(true);

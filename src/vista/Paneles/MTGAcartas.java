@@ -12,6 +12,7 @@ import com.mysql.cj.xdevapi.Result;
 import bdd.Conexion;
 import vista.MTGAanadircartas;
 import vista.MTGAanadircartasbiblioteca;
+import vista.MTGAvisualizarcartas;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -30,6 +31,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.ListSelectionModel;
 import javax.swing.ImageIcon;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class MTGAcartas extends JPanel {
 	/**
@@ -56,6 +59,17 @@ public class MTGAcartas extends JPanel {
 		add(scrollPrincipal);
 
 		tblPrincipal = new JTable();
+		tblPrincipal.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int key = e.getKeyCode();
+				
+				if (key == KeyEvent.VK_F10) {
+					MTGAvisualizarcartas a = new MTGAvisualizarcartas((String) tblPrincipal.getModel().getValueAt(tblPrincipal.getSelectedRow(), 0));
+					a.setVisible(true);
+				}
+			}
+		});
 		tblPrincipal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblPrincipal.addMouseListener(new MouseAdapter() {
 			@Override

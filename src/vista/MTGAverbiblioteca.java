@@ -23,6 +23,8 @@ import javax.swing.table.DefaultTableModel;
 
 import bdd.Conexion;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class MTGAverbiblioteca extends JFrame {
 
@@ -131,8 +133,12 @@ public class MTGAverbiblioteca extends JFrame {
 		JButton btnNewButton = new JButton("A\u00F1adir cartas");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MTGAanadircartabiblioteca a = new MTGAanadircartabiblioteca(nombres,btnBuscarCarta);
-				a.setVisible(true);
+				if (sabersiesmia()) {
+					MTGAanadircartabiblioteca a = new MTGAanadircartabiblioteca(nombres,btnBuscarCarta);
+					a.setVisible(true);
+				}else {
+					JOptionPane.showMessageDialog(null,"Estas intentando añadir una carta que no es tuya","Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		btnNewButton.setBounds(849, 77, 135, 23);
@@ -162,6 +168,17 @@ public class MTGAverbiblioteca extends JFrame {
 		contentPane.add(scrollPane);
 		
 		table = new JTable();
+		table.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int key = e.getKeyCode();
+				
+				if (key == KeyEvent.VK_F10) {
+					MTGAvisualizarcartas a = new MTGAvisualizarcartas((String) table.getModel().getValueAt(table.getSelectedRow(), 0));
+					a.setVisible(true);
+				}
+			}
+		});
 
 		scrollPane.setViewportView(table);
 		String consulta = "SELECT conjuntodecartas.idConjuntoDeCartas,cartas.nombre, expansion.nombre as expansion, tipodecarta.nombre as tipodecarta , subtipo.nombre as subtipo, color.nombre as color FROM cartas JOIN conjuntodecartas USING (idCarta) JOIN expansion USING (idExpansion) JOIN tipodecarta USING (idTipoDeCarta) JOIN subtipo USING (idSubtipo) JOIN color USING (idColor) JOIN biblioteca USING(idBiblioteca) WHERE biblioteca.nombre = '"+nombre+"'";

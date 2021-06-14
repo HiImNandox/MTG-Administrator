@@ -6,7 +6,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import bdd.Conexion;
+
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextPane;
@@ -15,6 +22,16 @@ public class MTGAvisualizarcartas extends JFrame {
 
 	private JPanel contentPane;
 	public static String nombrecarta;
+	public JLabel txtNombre = new JLabel("New label");
+	public JLabel txtCoste = new JLabel("New label");
+	public JLabel txtRareza = new JLabel("New label");
+	public JLabel txtColor = new JLabel("New label");
+	public JLabel txtExpansion = new JLabel("New label");
+	public JLabel txtResistencia = new JLabel("New label");
+	public JLabel txtFuerza = new JLabel("New label");
+	public JLabel txtSubtipo = new JLabel("Subtipo");
+	public JLabel txtTipoDeCarta = new JLabel("New label");
+	public JTextPane txtTexto = new JTextPane();
 	/**
 	 * Launch the application.
 	 */
@@ -35,11 +52,12 @@ public class MTGAvisualizarcartas extends JFrame {
 	 * Create the frame.
 	 */
 	public MTGAvisualizarcartas(String nombre) {
+		setAlwaysOnTop(true);
 		nombrecarta = nombre;
 		setTitle(nombre);
 		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MTGAvisualizarcartas.class.getResource("/img/logo.jpg")));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 411, 506);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -51,21 +69,21 @@ public class MTGAvisualizarcartas extends JFrame {
 		lblNewLabel.setBounds(10, 11, 108, 14);
 		contentPane.add(lblNewLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel("New label");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNewLabel_1.setBounds(10, 36, 217, 14);
-		contentPane.add(lblNewLabel_1);
+
+		txtNombre.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		txtNombre.setBounds(10, 36, 217, 14);
+		contentPane.add(txtNombre);
 		
 		JLabel lblNewLabel_2 = new JLabel("Coste");
 		lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_2.setBounds(270, 11, 108, 14);
 		contentPane.add(lblNewLabel_2);
 		
-		JLabel lblNewLabel_3 = new JLabel("New label");
-		lblNewLabel_3.setBounds(270, 37, 108, 14);
-		contentPane.add(lblNewLabel_3);
+
+		txtCoste.setBounds(270, 37, 108, 14);
+		contentPane.add(txtCoste);
 		
-		JLabel lblNewLabel_4 = new JLabel("Tipo de Carta");
+		JLabel lblNewLabel_4 = new JLabel("Color");
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_4.setBounds(10, 75, 172, 14);
 		contentPane.add(lblNewLabel_4);
@@ -75,30 +93,30 @@ public class MTGAvisualizarcartas extends JFrame {
 		lblNewLabel_2_1.setBounds(270, 75, 108, 14);
 		contentPane.add(lblNewLabel_2_1);
 		
-		JLabel lblNewLabel_3_1 = new JLabel("New label");
-		lblNewLabel_3_1.setBounds(270, 101, 108, 14);
-		contentPane.add(lblNewLabel_3_1);
+
+		txtRareza.setBounds(270, 101, 108, 14);
+		contentPane.add(txtRareza);
 		
-		JLabel lblNewLabel_3_1_1 = new JLabel("New label");
-		lblNewLabel_3_1_1.setBounds(10, 100, 217, 14);
-		contentPane.add(lblNewLabel_3_1_1);
+
+		txtColor.setBounds(10, 100, 217, 14);
+		contentPane.add(txtColor);
 		
-		JLabel lblNewLabel_3_1_1_1 = new JLabel("New label");
-		lblNewLabel_3_1_1_1.setBounds(10, 157, 217, 14);
-		contentPane.add(lblNewLabel_3_1_1_1);
+
+		txtExpansion.setBounds(10, 157, 217, 14);
+		contentPane.add(txtExpansion);
 		
 		JLabel lblNewLabel_4_1 = new JLabel("Expansion");
 		lblNewLabel_4_1.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_4_1.setBounds(10, 132, 172, 14);
 		contentPane.add(lblNewLabel_4_1);
 		
-		JLabel lblNewLabel_3_1_1_1_1 = new JLabel("New label");
-		lblNewLabel_3_1_1_1_1.setBounds(270, 157, 164, 14);
-		contentPane.add(lblNewLabel_3_1_1_1_1);
+
+		txtTipoDeCarta.setBounds(270, 157, 125, 14);
+		contentPane.add(txtTipoDeCarta);
 		
-		JLabel lblNewLabel_4_1_1 = new JLabel("Color");
+		JLabel lblNewLabel_4_1_1 = new JLabel("Tipo De Carta");
 		lblNewLabel_4_1_1.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblNewLabel_4_1_1.setBounds(270, 132, 164, 14);
+		lblNewLabel_4_1_1.setBounds(270, 132, 125, 14);
 		contentPane.add(lblNewLabel_4_1_1);
 		
 		JLabel lblNewLabel_5 = new JLabel("Fuerza");
@@ -106,37 +124,75 @@ public class MTGAvisualizarcartas extends JFrame {
 		lblNewLabel_5.setBounds(38, 192, 53, 14);
 		contentPane.add(lblNewLabel_5);
 		
-		JLabel lblNewLabel_6 = new JLabel("New label");
-		lblNewLabel_6.setBounds(38, 217, 46, 14);
-		contentPane.add(lblNewLabel_6);
+
+		txtFuerza.setBounds(38, 217, 46, 14);
+		contentPane.add(txtFuerza);
 		
 		JLabel lblNewLabel_5_1 = new JLabel("Resistencia");
 		lblNewLabel_5_1.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_5_1.setBounds(300, 192, 98, 14);
 		contentPane.add(lblNewLabel_5_1);
 		
-		JLabel lblNewLabel_6_1 = new JLabel("New label");
-		lblNewLabel_6_1.setBounds(300, 217, 46, 14);
-		contentPane.add(lblNewLabel_6_1);
+
+		txtResistencia.setBounds(300, 217, 46, 14);
+		contentPane.add(txtResistencia);
 		
 		JLabel lblNewLabel_7 = new JLabel("Subtipo");
 		lblNewLabel_7.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_7.setBounds(156, 192, 64, 14);
 		contentPane.add(lblNewLabel_7);
 		
-		JLabel lblNewLabel_7_1 = new JLabel("Subtipo");
-		lblNewLabel_7_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNewLabel_7_1.setBounds(156, 216, 98, 14);
-		contentPane.add(lblNewLabel_7_1);
+
+		txtSubtipo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		txtSubtipo.setBounds(156, 216, 98, 14);
+		contentPane.add(txtSubtipo);
 		
 		JLabel lblNewLabel_8 = new JLabel("Texto de la carta");
 		lblNewLabel_8.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblNewLabel_8.setBounds(10, 260, 108, 14);
 		contentPane.add(lblNewLabel_8);
 		
-		JTextPane textPane = new JTextPane();
-		textPane.setEditable(false);
-		textPane.setBounds(10, 285, 388, 181);
-		contentPane.add(textPane);
+
+		txtTexto.setEditable(false);
+		txtTexto.setBounds(10, 285, 388, 181);
+		contentPane.add(txtTexto);
+		obtenerDatos();
+	}
+	
+	public void obtenerDatos() {
+		Connection conexion = Conexion.open();
+		String consulta = "Select cartas.nombre,cartas.coste, tipodecarta.nombre as tipodecarta, subtipo.nombre as subtipo, expansion.nombre as expansion, color.nombre as color, rareza.nombre as rareza, cartas.textodelacarta, cartas.fuerzairesistencia from cartas JOIN tipodecarta USING(idTipoDeCarta) JOIN subtipo USING(idSubtipo) JOIN expansion USING(idExpansion) JOIN color USING(idColor) JOIN rareza USING(idRareza) where cartas.nombre = '"+nombrecarta+"'";
+		
+		try {
+			PreparedStatement pst = conexion.prepareStatement(consulta);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				txtNombre.setText(rs.getString("nombre"));
+				txtColor.setText(rs.getString("color"));
+				txtExpansion.setText(rs.getString("expansion"));
+				txtCoste.setText(rs.getString("coste"));
+				txtRareza.setText(rs.getString("rareza"));
+				txtSubtipo.setText(rs.getString("subtipo"));
+				txtTipoDeCarta.setText(rs.getString("tipodecarta"));
+				establecerResistencia(rs.getString("fuerzairesistencia"));
+				txtTexto.setText(rs.getString("textodelacarta"));
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public void establecerResistencia(String fuerzayresistencia) {
+		if (fuerzayresistencia.contains("/")) {
+			String[] f = fuerzayresistencia.split("/");
+			txtFuerza.setText(f[0]);
+			txtResistencia.setText(f[1]);
+		}else if (!fuerzayresistencia.equals("")) {
+			txtResistencia.setText(fuerzayresistencia);
+			txtFuerza.setText(" ");
+		} else {
+			txtFuerza.setText(" ");
+			txtResistencia.setText(" ");
+		}
 	}
 }

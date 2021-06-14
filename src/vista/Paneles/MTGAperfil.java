@@ -84,10 +84,6 @@ public class MTGAperfil extends JPanel {
 		lblBiblioteca.setBounds(650, 59, 109, 13);
 		panel.add(lblBiblioteca);
 		
-		JButton btnNewButton = new JButton("Cambiar contrase\u00F1a");
-		btnNewButton.setBounds(824, 54, 164, 21);
-		panel.add(btnNewButton);
-		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(null, "Mis cartas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_1.setBounds(34, 151, 487, 492);
